@@ -37,3 +37,7 @@ h1 {
 
 .radio:after {
 }
+
+.strikethrough {
+    text-decoration: line-through;
+}
