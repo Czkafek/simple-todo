@@ -27,18 +27,16 @@ function Home() {
 
     const handleDelete = (targetIndex) => {
         const newTasks = tasks.filter((task, index) => index !== targetIndex);
-        setTasks(newTasks);
         const newSwiped = swiped.map((e, index) => (index === targetIndex ? 0 : e));
+        setTasks(newTasks);
         setSwiped(newSwiped);
     };
 
     useEffect(() => {
         const data = localStorage.getItem("tasks");
-        console.log(data);
         if(data) {
             setTasks(JSON.parse(data));
         }
-        console.log(data);
     }, []);
 
     useEffect(() => {
@@ -56,31 +54,31 @@ function Home() {
             <h1>To-Do List</h1>
 
             <div className={styles.tasks}>
-                {tasks.map((task, index) => <>
-                    <div key={index} onClick={() => handleDelete(index)} className={styles.bin}>
-                        <img src={binIcon} alt="bin" />
+                {tasks.map((task, index) =>
+                    <div key={index} className="styles.taskWrapper">
+                        <div onClick={() => handleDelete(index)} className={styles.bin}>
+                            <img src={binIcon} alt="bin" />
+                        </div>
+                        <motion.div 
+                            className={styles.task}
+                            drag="x"
+                            dragConstraints={{left: 0, right: MAX_DRAG}}
+                            dragElastic={0.2}
+                            onDragEnd={(event, info) => {
+                                const offset = info.offset.x;
+                                setSwiped((prev) => {
+                                    const newSwiped = [...prev];
+                                    newSwiped[index] = offset >= MAX_DRAG / 2 ? MAX_DRAG : 0;
+                                    return newSwiped;
+                                })
+                            }}
+                            animate={{x: swiped[index]}}
+                            transition={{type: "spring", stiffness: 300, damping: 30}}>
+                            <input type="checkbox" checked={task.checked} onChange={() => handleCheck(index)} />
+                            <span className={styles.radio}/>
+                            <p className={task.checked ? styles.strikethrough : ''}>{task.text}</p>
+                        </motion.div> 
                     </div>
-                    <motion.div 
-                        key={index}
-                        className={styles.task}
-                        drag="x"
-                        dragConstraints={{left: 0, right: MAX_DRAG}}
-                        dragElastic={0.2}
-                        onDragEnd={(event, info) => {
-                            const offset = info.offset.x;
-                            setSwiped((prev) => {
-                                const newSwiped = [...prev];
-                                newSwiped[index] = offset >= MAX_DRAG / 2 ? MAX_DRAG : 0;
-                                return newSwiped;
-                            })
-                        }}
-                        animate={{x: swiped[index]}}
-                        transition={{type: "spring", stiffness: 300, damping: 30}}>
-                        <input type="checkbox" onChange={() => handleCheck(index)} />
-                        <span className={styles.radio}/>
-                        <p className={task.checked ? styles.strikethrough : ''}>{task.text}</p>
-                    </motion.div> 
-                    </>
                 )}
             </div>
 
