@@ -79,8 +79,6 @@ h1 {
     width: 32px;
 }
 
-
-
 @media (min-width: 400px) {
     h1 {
         padding: 24px;
